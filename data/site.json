@@ -1,0 +1,215 @@
+{
+  "settings": {
+    "siteName": "L & W 的恋爱小站",
+    "homeTitle": "我们的小宇宙",
+    "homeSubtitle": "记录每一个平凡却发光的瞬间",
+    "coupleName": "L & W",
+    "relationshipStart": "2025-11-11",
+    "wjcBirthday": "09-26",
+    "lmmBirthday": "01-31",
+    "musicUrl": "https://music.163.com/playlist?id=818501323&uct2=U2FsdGVkX1+JODoXynHnJiyNNcmfPRHrNV5AjOAn8dM=",
+    "heroPhotoIds": [
+      "45499b9c6a7067ed8d8e59f3918c43ac"
+    ]
+  },
+  "albums": [
+    {
+      "id": "album-女明星照片-q4rm",
+      "name": "女明星照片",
+      "description": "",
+      "createdAt": "2026-06-01T02:32:24.699Z"
+    },
+    {
+      "id": "love-archive",
+      "name": "约会与合照",
+      "description": "来自 together 文件夹的第一批回忆。",
+      "coverPhotoId": "eafa7a8c5eae30652eaaf708f70fb323",
+      "createdAt": "2026-05-30T11:59:25.102Z"
+    }
+  ],
+  "photos": [
+    {
+      "id": "117834f7-f8e6-4883-bac4-f7851a5b097a",
+      "fileName": "117834f7-f8e6-4883-bac4-f7851a5b097a.png",
+      "src": "/together/117834f7-f8e6-4883-bac4-f7851a5b097a.png",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.101Z",
+      "caption": "回忆 1",
+      "author": "wjc",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "45499b9c6a7067ed8d8e59f3918c43ac",
+      "fileName": "45499b9c6a7067ed8d8e59f3918c43ac.jpg",
+      "src": "/together/45499b9c6a7067ed8d8e59f3918c43ac.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "lmm",
+      "isFeatured": true,
+      "isCover": false
+    },
+    {
+      "id": "4aea9ed37f39760fa02a9af8e3b28ae4",
+      "fileName": "4aea9ed37f39760fa02a9af8e3b28ae4.jpg",
+      "src": "/together/4aea9ed37f39760fa02a9af8e3b28ae4.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "回忆 3",
+      "author": "共同",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "4c67de4e-2bdc-4f6f-8aa7-3a58964fda44",
+      "fileName": "4c67de4e-2bdc-4f6f-8aa7-3a58964fda44.png",
+      "src": "/together/4c67de4e-2bdc-4f6f-8aa7-3a58964fda44.png",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "回忆 4",
+      "author": "wjc",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "569d34a1e107576b122c5e6f79b97e6e",
+      "fileName": "569d34a1e107576b122c5e6f79b97e6e.jpg",
+      "src": "/together/569d34a1e107576b122c5e6f79b97e6e.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "lmm",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "5df3153d-770c-41f4-9198-aca2d0976063",
+      "fileName": "5df3153d-770c-41f4-9198-aca2d0976063.png",
+      "src": "/together/5df3153d-770c-41f4-9198-aca2d0976063.png",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "回忆 6",
+      "author": "共同",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "5f7305a5596c93956c7f6d39c456a5c9",
+      "fileName": "5f7305a5596c93956c7f6d39c456a5c9.jpg",
+      "src": "/together/5f7305a5596c93956c7f6d39c456a5c9.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "回忆 7",
+      "author": "wjc",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "80dd45989d095178e81f890fe10ccb1b",
+      "fileName": "80dd45989d095178e81f890fe10ccb1b.jpg",
+      "src": "/together/80dd45989d095178e81f890fe10ccb1b.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "lmm",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "9b34cf1f7014d865524d73435e89cb62",
+      "fileName": "9b34cf1f7014d865524d73435e89cb62.jpg",
+      "src": "/together/9b34cf1f7014d865524d73435e89cb62.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "共同",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "b34a05e399990cf17be90ac94308ec88",
+      "fileName": "b34a05e399990cf17be90ac94308ec88.jpg",
+      "src": "/together/b34a05e399990cf17be90ac94308ec88.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "wjc",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "e4a2cf8054d751452308cb17d8f54a6e",
+      "fileName": "e4a2cf8054d751452308cb17d8f54a6e.jpg",
+      "src": "/together/e4a2cf8054d751452308cb17d8f54a6e.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "回忆 11",
+      "author": "lmm",
+      "isFeatured": false,
+      "isCover": false
+    },
+    {
+      "id": "eafa7a8c5eae30652eaaf708f70fb323",
+      "fileName": "eafa7a8c5eae30652eaaf708f70fb323.jpg",
+      "src": "/together/eafa7a8c5eae30652eaaf708f70fb323.jpg",
+      "albumId": "love-archive",
+      "uploadedAt": "2026-05-30T11:59:25.102Z",
+      "caption": "首页合照",
+      "author": "共同",
+      "isFeatured": false,
+      "isCover": true
+    }
+  ],
+  "timeline": [
+    {
+      "id": "timeline-2025-11-11",
+      "date": "2025-11-11",
+      "title": "在一起了",
+      "description": "从这一天开始，我们把彼此写进未来。",
+      "author": "共同"
+    },
+    {
+      "id": "timeline-2025-12-31",
+      "date": "2025-12-31",
+      "title": "武汉旅行",
+      "description": "一起去武汉，把 2025 的尾声留在风和夜色里。",
+      "author": "共同"
+    },
+    {
+      "id": "timeline-2026-01-16",
+      "date": "2026-01-16",
+      "title": "广州旅行",
+      "description": "在广州继续把回忆往前写，留下新的城市片段。",
+      "author": "共同"
+    },
+    {
+      "id": "timeline-2026-01-31",
+      "date": "2026-01-31",
+      "title": "lmm 生日",
+      "description": "给 lmm 的生日，应该要被认真记下来。",
+      "author": "共同"
+    }
+  ],
+  "diaries": [],
+  "locations": [
+    {
+      "id": "wuhan-2025-12-31",
+      "city": "武汉",
+      "provinceId": "hubei",
+      "date": "2025-12-31",
+      "note": "在武汉一起旅行的那天。",
+      "photoIds": [],
+      "author": "共同"
+    },
+    {
+      "id": "guangzhou-2026-01-16",
+      "city": "广州",
+      "provinceId": "guangdong",
+      "date": "2026-01-16",
+      "note": "广州旅行的回忆点。",
+      "photoIds": [],
+      "author": "共同"
+    }
+  ]
+}
