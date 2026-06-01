@@ -241,11 +241,11 @@ function AlbumDirectoryPage({
   }
 
   return (
-    <div className="grid min-h-[63vh] gap-6 lg:grid-cols-[0.74fr_1.26fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-[#e2c8b0] bg-[linear-gradient(180deg,#fcf5eb_0%,#f1e2d1_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
+    <div className="grid min-h-[56vh] gap-4 sm:gap-6 lg:min-h-[63vh] lg:grid-cols-[0.74fr_1.26fr]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-[#e2c8b0] bg-[linear-gradient(180deg,#fcf5eb_0%,#f1e2d1_100%)] p-3 sm:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
         <div className="absolute inset-y-6 left-5 w-4 rounded-full bg-[linear-gradient(180deg,#9f6c57,#553830)] opacity-80" />
         <div className="absolute inset-y-6 left-9 w-[3px] rounded-full bg-[linear-gradient(180deg,#f5e7d7,#c89071,#f5e7d7)]" />
-        <div className="max-h-[63vh] space-y-3 overflow-auto pl-7 pr-2">
+        <div className="max-h-[36vh] space-y-3 overflow-auto pl-7 pr-2 sm:max-h-[44vh] lg:max-h-[63vh]">
           {albums.map((album, index) => {
             const isActive = album.id === selectedAlbum.id;
 
@@ -291,10 +291,10 @@ function AlbumDirectoryPage({
       </div>
 
       <div className="grid gap-6">
-        <div className="paper-panel rounded-[2rem] px-6 py-6">
+        <div className="paper-panel rounded-[2rem] px-4 py-5 sm:px-6 sm:py-6">
           <p className="text-[11px] uppercase tracking-[0.36em] text-[#aa8367]">Album directory</p>
-          <h3 className="mt-3 text-4xl font-semibold text-[#3f2d24]">{selectedAlbum.name}</h3>
-          <p className="mt-4 max-w-2xl text-base leading-8 text-[#6c5547]">
+          <h3 className="mt-3 text-3xl font-semibold text-[#3f2d24] sm:text-4xl">{selectedAlbum.name}</h3>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-[#6c5547] sm:text-base sm:leading-8">
             {selectedAlbum.description || "这一组照片的简介还没有写太多。"}
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -330,7 +330,7 @@ function AlbumDirectoryPage({
             )}
           </div>
 
-          <div className="paper-panel flex flex-col justify-between rounded-[2rem] px-6 py-6">
+          <div className="paper-panel flex flex-col justify-between rounded-[2rem] px-4 py-5 sm:px-6 sm:py-6">
             <div className="space-y-4">
               <p className="text-[11px] uppercase tracking-[0.36em] text-[#ab8265]">Preview</p>
               <p className="text-sm leading-7 text-[#6f594b]">
@@ -341,7 +341,7 @@ function AlbumDirectoryPage({
               <button
                 type="button"
                 onClick={() => onOpenAlbum(selectedAlbum.id)}
-                className="inline-flex items-center justify-center rounded-full border border-[#d2b093] bg-[#4f352c] px-5 py-3 text-sm font-medium text-[#fff4e9] transition hover:bg-[#674339]"
+                className="inline-flex w-full items-center justify-center rounded-full border border-[#d2b093] bg-[#4f352c] px-5 py-3 text-sm font-medium text-[#fff4e9] transition hover:bg-[#674339] sm:w-auto"
               >
                 打开相册
               </button>
@@ -363,13 +363,13 @@ function AlbumWallPage({
   onBackToDirectory: () => void;
 }) {
   return (
-    <div className="min-h-[63vh] space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="min-h-[56vh] space-y-4 sm:space-y-5 lg:min-h-[63vh]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <div className="inline-flex rounded-full border border-[#d2b093] bg-white/72 px-4 py-2 text-[11px] uppercase tracking-[0.34em] text-[#9b755c]">
           {album.name}
         </div>
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="text-right">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          <div className="sm:text-right">
             <p className="text-[11px] uppercase tracking-[0.32em] text-[#ab8265]">照片数量</p>
             <p className="mt-2 text-2xl font-semibold text-[#4b3429]">{album.photos.length} 张</p>
           </div>
@@ -377,9 +377,9 @@ function AlbumWallPage({
         </div>
       </div>
 
-      <div className="paper-panel rounded-[2rem] px-4 py-4">
+      <div className="paper-panel rounded-[2rem] px-3 py-3 sm:px-4 sm:py-4">
         {album.photos.length ? (
-          <div className="grid min-h-[54vh] grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid min-h-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
             {album.photos.map((photo, index) => (
               <button
                 key={photo.id}
@@ -392,7 +392,7 @@ function AlbumWallPage({
                     src={photo.src}
                     alt={photo.caption || `?? ${index + 1}`}
                     fill
-                    sizes="(max-width: 1280px) 50vw, 22vw"
+                    sizes="(max-width: 639px) 100vw, (max-width: 1024px) 50vw, 22vw"
                     className="object-cover transition duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -420,8 +420,8 @@ function PhotoDetailPage({
   const detailText = photo.details?.trim() || photo.caption || "这张照片还没有写下更多细节。";
 
   return (
-    <div className="grid min-h-[63vh] items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-      <div className="relative overflow-hidden rounded-[2rem] border border-[#ead6c4] bg-[#f3e5d6] p-4 shadow-[0_24px_50px_rgba(128,90,62,0.14)]">
+    <div className="grid min-h-[56vh] items-start gap-5 sm:gap-8 lg:min-h-[63vh] lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div className="relative overflow-hidden rounded-[2rem] border border-[#ead6c4] bg-[#f3e5d6] p-3 sm:p-4 shadow-[0_24px_50px_rgba(128,90,62,0.14)]">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]">
           <Image
             src={photo.src}
@@ -433,20 +433,20 @@ function PhotoDetailPage({
         </div>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-4 sm:space-y-5">
         <div className="inline-flex rounded-full border border-[#d2b093] bg-white/72 px-4 py-2 text-[11px] uppercase tracking-[0.34em] text-[#9b755c]">
           {album.name}
         </div>
         <div>
           <p className="text-[11px] uppercase tracking-[0.36em] text-[#aa8367]">Photo detail</p>
-          <h3 className="mt-3 text-4xl font-semibold text-[#3f2d24]">
+          <h3 className="mt-3 text-3xl font-semibold text-[#3f2d24] sm:text-4xl">
             {photo.caption || "未命名照片"}
           </h3>
           <p className="mt-2 text-sm text-[#987762]">{formatDisplayDate(photo.uploadedAt)}</p>
         </div>
-        <div className="paper-panel rounded-[2rem] px-6 py-6">
+        <div className="paper-panel rounded-[2rem] px-4 py-5 sm:px-6 sm:py-6">
           <p className="text-[11px] uppercase tracking-[0.36em] text-[#ab8265]">Description</p>
-          <p className="mt-4 whitespace-pre-wrap text-[15px] leading-8 text-[#5f493c]">
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-[#5f493c] sm:text-[15px] sm:leading-8">
             {detailText}
           </p>
         </div>
@@ -608,7 +608,7 @@ function BookViewer({
   const currentPage = pages[pageIndex];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,5,5,0.74)] px-4 py-6 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(7,5,5,0.74)] px-2 py-3 backdrop-blur-md sm:items-center sm:px-4 sm:py-6">
       <button
         type="button"
         aria-label="关闭书本"
@@ -616,8 +616,8 @@ function BookViewer({
         onClick={onClose}
       />
       <div className="relative z-10 w-full max-w-6xl">
-        <div className="mx-auto max-w-5xl rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(24,17,16,0.92),rgba(10,8,8,0.96))] p-4 shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
-          <div className="flex items-center justify-between px-4 pb-4 pt-2 text-[#ede0cf]">
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(24,17,16,0.92),rgba(10,8,8,0.96))] p-3 shadow-[0_30px_120px_rgba(0,0,0,0.55)] sm:rounded-[2.4rem] sm:p-4">
+          <div className="flex flex-col gap-4 px-2 pb-4 pt-2 text-[#ede0cf] sm:flex-row sm:items-center sm:justify-between sm:px-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.34em] text-[#ccbaa3]">{accent}</p>
               <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
@@ -632,23 +632,23 @@ function BookViewer({
             </button>
           </div>
 
-          <div className="relative rounded-[2rem] border border-[#d8bfa4]/28 bg-[#d9bea2] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
-            <div className="absolute bottom-4 left-[48.9%] top-4 w-[2px] rounded-full bg-[linear-gradient(180deg,rgba(106,69,48,0.15),rgba(64,38,27,0.4),rgba(106,69,48,0.12))]" />
-            <div className="absolute inset-y-4 left-4 w-5 rounded-full bg-[linear-gradient(180deg,#5e3f34,#2f1f1a)]" />
-            <div className="absolute inset-y-4 left-7 w-[3px] rounded-full bg-[linear-gradient(180deg,#92675a,#f1dfca,#92675a)] opacity-70" />
-            <div className="paper-panel relative min-h-[70vh] overflow-hidden rounded-[1.75rem] px-6 py-6 sm:px-8">
+          <div className="relative rounded-[1.8rem] border border-[#d8bfa4]/28 bg-[#d9bea2] p-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] sm:rounded-[2rem] sm:p-5">
+            <div className="absolute bottom-4 left-[48.9%] top-4 hidden w-[2px] rounded-full bg-[linear-gradient(180deg,rgba(106,69,48,0.15),rgba(64,38,27,0.4),rgba(106,69,48,0.12))] lg:block" />
+            <div className="absolute inset-y-4 left-4 hidden w-5 rounded-full bg-[linear-gradient(180deg,#5e3f34,#2f1f1a)] sm:block" />
+            <div className="absolute inset-y-4 left-7 hidden w-[3px] rounded-full bg-[linear-gradient(180deg,#92675a,#f1dfca,#92675a)] opacity-70 sm:block" />
+            <div className="paper-panel relative min-h-[calc(100vh-15rem)] overflow-hidden rounded-[1.4rem] px-4 py-4 sm:min-h-[70vh] sm:rounded-[1.75rem] sm:px-8 sm:py-6">
               {turnState ? <TurnSheet direction={turnState.direction} /> : null}
-              <div className="relative z-10 min-h-[63vh]">
+              <div className="relative z-10 min-h-full overflow-y-auto sm:min-h-[63vh]">
                 {currentPage.render({ goToPage })}
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-4">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <button
                 type="button"
                 onClick={() => goToPage(pageIndex - 1)}
                 disabled={pageIndex === 0 || Boolean(turnState)}
-                className="rounded-full border border-[#b99778] bg-white/56 px-4 py-2 text-sm text-[#5d4436] transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-full border border-[#b99778] bg-white/56 px-4 py-2 text-sm text-[#5d4436] transition hover:bg-white/80 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
               >
                 上一页
               </button>
@@ -664,7 +664,7 @@ function BookViewer({
                 type="button"
                 onClick={() => goToPage(pageIndex + 1)}
                 disabled={pageIndex === pages.length - 1 || Boolean(turnState)}
-                className="rounded-full border border-[#b99778] bg-[#4f352c] px-4 py-2 text-sm text-[#fff4e9] transition hover:bg-[#674339] disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full rounded-full border border-[#b99778] bg-[#4f352c] px-4 py-2 text-sm text-[#fff4e9] transition hover:bg-[#674339] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
               >
                 下一页
               </button>

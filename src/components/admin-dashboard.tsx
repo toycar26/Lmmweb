@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PendingSubmit } from "@/components/pending-submit";
 import {
   addAlbumAction,
   addDiaryAction,
@@ -229,7 +230,12 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                 <Field label="内容">
                   <Textarea name="content" required />
                 </Field>
-                <Button type="submit">添加日记</Button>
+                <PendingSubmit
+                  idleLabel="添加日记"
+                  pendingLabel="提交中..."
+                  idleHint="点击后会自动保存到日记列表。"
+                  pendingHint="正在保存日记，请不要重复点击。"
+                />
               </form>
 
               <form
@@ -289,7 +295,12 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                     首张设为封面
                   </label>
                 </div>
-                <Button type="submit">上传照片</Button>
+                <PendingSubmit
+                  idleLabel="上传照片"
+                  pendingLabel="上传中..."
+                  idleHint="选择图片后点击上传，完成后会自动刷新。"
+                  pendingHint="图片正在上传，请耐心等待，不要重复点击。"
+                />
               </form>
 
               <form
