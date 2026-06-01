@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { promises as fs } from "fs";
-import path from "path";
+import bundledSiteData from "../../data/site.json";
 import { inferProvinceId, type ProvinceId } from "@/lib/provinces";
+import { getSiteCloudflareEnv } from "@/lib/runtime-env";
 
 export type Author = "wjc" | "lmm" | "共同";
 
@@ -74,25 +74,10 @@ export type SiteData = {
   locations: LocationItem[];
 };
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "site.json");
-const PUBLIC_TOGETHER_DIR = path.join(process.cwd(), "public", "together");
-const PUBLIC_UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
+const SITE_DATA_KV_KEY = "site-data";
 
-const INITIAL_HERO_ORDER = [
-  "eafa7a8c5eae30652eaaf708f70fb323",
-  "45499b9c6a7067ed8d8e59f3918c43ac",
-  "569d34a1e107576b122c5e6f79b97e6e",
-  "80dd45989d095178e81f890fe10ccb1b",
-  "9b34cf1f7014d865524d73435e89cb62",
-  "b34a05e399990cf17be90ac94308ec88",
-];
-
+let inMemoryData: SiteData | null = null;
 let writeQueue = Promise.resolve();
-
-function baseId(fileName: string) {
-  return path.parse(fileName).name;
-}
 
 function nowIso() {
   return new Date().toISOString();
@@ -136,117 +121,16 @@ function diffDays(from: Date, to: Date) {
   return Math.round((toUtc - fromUtc) / 86400000);
 }
 
-async function listPhotoFiles(dir: string) {
-  try {
-    const files = await fs.readdir(dir);
-    return files.filter((file) => /\.(png|jpe?g|webp|gif|avif)$/i.test(file));
-  } catch {
-    return [];
-  }
+function deepCloneSiteData(data: SiteData): SiteData {
+  return JSON.parse(JSON.stringify(data)) as SiteData;
 }
 
-async function makeDefaultData(): Promise<SiteData> {
-  const files = await listPhotoFiles(PUBLIC_TOGETHER_DIR);
-  const orderedFiles = [...files].sort((a, b) => a.localeCompare(b, "en"));
-  const heroPhotoIds = INITIAL_HERO_ORDER.filter((id) =>
-    orderedFiles.some((file) => baseId(file) === id),
-  );
-  const fallbackHeroIds = orderedFiles.slice(0, 6).map((file) => baseId(file));
-  const chosenHeroIds = heroPhotoIds.length ? heroPhotoIds : fallbackHeroIds;
-  const albumId = "love-archive";
+function bundledData(): SiteData {
+  return deepCloneSiteData(bundledSiteData as SiteData);
+}
 
-  const photos: Photo[] = orderedFiles.map((file, index) => {
-    const id = baseId(file);
-    const featured = chosenHeroIds.includes(id);
-
-    return {
-      id,
-      fileName: file,
-      src: `/together/${file}`,
-      albumId,
-      uploadedAt: nowIso(),
-      caption: featured ? "首页合照" : `回忆 ${index + 1}`,
-      author: index % 3 === 0 ? "wjc" : index % 3 === 1 ? "lmm" : "共同",
-      isFeatured: featured,
-      isCover: id === chosenHeroIds[0],
-    };
-  });
-
-  return {
-    settings: {
-      siteName: "L & W 的恋爱小站",
-      homeTitle: "我们的小宇宙",
-      homeSubtitle: "记录每一个平凡却发光的瞬间",
-      coupleName: "L & W",
-      relationshipStart: "2025-11-11",
-      wjcBirthday: "09-26",
-      lmmBirthday: "01-31",
-      musicUrl:
-        "https://music.163.com/playlist?id=818501323&uct2=U2FsdGVkX1+JODoXynHnJiyNNcmfPRHrNV5AjOAn8dM=",
-      heroPhotoIds: chosenHeroIds,
-    },
-    albums: [
-      {
-        id: albumId,
-        name: "约会与合照",
-        description: "来自 together 文件夹的第一批回忆。",
-        coverPhotoId: chosenHeroIds[0],
-        createdAt: nowIso(),
-      },
-    ],
-    photos,
-    timeline: [
-      {
-        id: "timeline-2025-11-11",
-        date: "2025-11-11",
-        title: "在一起了",
-        description: "从这一天开始，我们把彼此写进未来。",
-        author: "共同",
-      },
-      {
-        id: "timeline-2025-12-31",
-        date: "2025-12-31",
-        title: "武汉旅行",
-        description: "一起去武汉，把 2025 的尾声留在风和夜色里。",
-        author: "共同",
-      },
-      {
-        id: "timeline-2026-01-16",
-        date: "2026-01-16",
-        title: "广州旅行",
-        description: "在广州继续把回忆往前写，留下新的城市片段。",
-        author: "共同",
-      },
-      {
-        id: "timeline-2026-01-31",
-        date: "2026-01-31",
-        title: "lmm 生日",
-        description: "给 lmm 的生日，应该要被认真记下来。",
-        author: "共同",
-      },
-    ],
-    diaries: [],
-    locations: [
-      {
-        id: "wuhan-2025-12-31",
-        city: "武汉",
-        provinceId: "hubei",
-        date: "2025-12-31",
-        note: "在武汉一起旅行的那天。",
-        photoIds: [],
-        author: "共同",
-      },
-      {
-        id: "guangzhou-2026-01-16",
-        city: "广州",
-        provinceId: "guangdong",
-        date: "2026-01-16",
-        note: "广州旅行的回忆点。",
-        photoIds: [],
-        author: "共同",
-      },
-    ],
-  };
+function normalizeAuthor(author: unknown): Author {
+  return author === "wjc" || author === "lmm" || author === "共同" ? author : "共同";
 }
 
 function normalizeLocationItem(item: Partial<LocationItem> & Record<string, unknown>): LocationItem {
@@ -264,25 +148,63 @@ function normalizeLocationItem(item: Partial<LocationItem> & Record<string, unkn
     date: String(item.date ?? ""),
     note: String(item.note ?? ""),
     photoIds: Array.isArray(item.photoIds) ? item.photoIds.map(String) : [],
-    author:
-      item.author === "wjc" || item.author === "lmm" || item.author === "共同"
-        ? item.author
-        : "共同",
+    author: normalizeAuthor(item.author),
   };
 }
 
 async function normalizeData(data: Partial<SiteData>): Promise<SiteData> {
-  const defaults = await makeDefaultData();
+  const defaults = bundledData();
 
   return {
     settings: {
       ...defaults.settings,
       ...(data.settings ?? {}),
+      heroPhotoIds: Array.isArray(data.settings?.heroPhotoIds)
+        ? data.settings.heroPhotoIds.map(String)
+        : defaults.settings.heroPhotoIds,
     },
-    albums: data.albums ?? defaults.albums,
-    photos: data.photos ?? defaults.photos,
-    timeline: data.timeline ?? defaults.timeline,
-    diaries: data.diaries ?? defaults.diaries,
+    albums: Array.isArray(data.albums)
+      ? data.albums.map((album) => ({
+          id: String(album.id ?? createSlugId("album", String(album.name ?? "album"))),
+          name: String(album.name ?? "未命名相册"),
+          description: String(album.description ?? ""),
+          coverPhotoId: typeof album.coverPhotoId === "string" ? album.coverPhotoId : undefined,
+          createdAt: String(album.createdAt ?? nowIso()),
+        }))
+      : defaults.albums,
+    photos: Array.isArray(data.photos)
+      ? data.photos.map((photo) => ({
+          id: String(photo.id ?? createSlugId("photo", String(photo.fileName ?? nowIso()))),
+          fileName: String(photo.fileName ?? `${photo.id ?? crypto.randomUUID()}.jpg`),
+          src: String(photo.src ?? ""),
+          albumId: String(photo.albumId ?? defaults.albums[0]?.id ?? "love-archive"),
+          uploadedAt: String(photo.uploadedAt ?? nowIso()),
+          caption: String(photo.caption ?? ""),
+          details: typeof photo.details === "string" ? photo.details : undefined,
+          author: normalizeAuthor(photo.author),
+          isFeatured: Boolean(photo.isFeatured),
+          isCover: Boolean(photo.isCover),
+          locationId: typeof photo.locationId === "string" ? photo.locationId : undefined,
+        }))
+      : defaults.photos,
+    timeline: Array.isArray(data.timeline)
+      ? data.timeline.map((item) => ({
+          id: String(item.id ?? createSlugId("timeline", `${item.date ?? nowIso()}-${item.title ?? "timeline"}`)),
+          date: String(item.date ?? ""),
+          title: String(item.title ?? ""),
+          description: String(item.description ?? ""),
+          author: normalizeAuthor(item.author),
+        }))
+      : defaults.timeline,
+    diaries: Array.isArray(data.diaries)
+      ? data.diaries.map((item) => ({
+          id: String(item.id ?? createSlugId("diary", `${item.date ?? nowIso()}-${item.title ?? "diary"}`)),
+          date: String(item.date ?? ""),
+          title: String(item.title ?? ""),
+          content: String(item.content ?? ""),
+          author: normalizeAuthor(item.author),
+        }))
+      : defaults.diaries,
     locations: Array.isArray(data.locations)
       ? data.locations.map((item) =>
           normalizeLocationItem(item as Partial<LocationItem> & Record<string, unknown>),
@@ -291,28 +213,58 @@ async function normalizeData(data: Partial<SiteData>): Promise<SiteData> {
   };
 }
 
-async function ensureSeededData() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    const data = await makeDefaultData();
-    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
+async function writeCloudflareSiteData(data: SiteData) {
+  const env = await getSiteCloudflareEnv();
+  if (!env?.SITE_DATA) {
+    throw new Error("Cloudflare KV binding SITE_DATA is missing.");
   }
+
+  await env.SITE_DATA.put(SITE_DATA_KV_KEY, JSON.stringify(data));
+}
+
+async function writeLocalSiteData(data: SiteData) {
+  inMemoryData = deepCloneSiteData(data);
+}
+
+async function ensureSeededCloudflareData() {
+  const env = await getSiteCloudflareEnv();
+  if (!env?.SITE_DATA) return null;
+
+  const current = await env.SITE_DATA.get(SITE_DATA_KV_KEY);
+  if (current) {
+    return normalizeData(JSON.parse(current) as Partial<SiteData>);
+  }
+
+  const seeded = bundledData();
+  await env.SITE_DATA.put(SITE_DATA_KV_KEY, JSON.stringify(seeded));
+  return seeded;
 }
 
 export async function loadSiteData(): Promise<SiteData> {
-  await ensureSeededData();
-  const raw = await fs.readFile(DATA_FILE, "utf8");
-  return normalizeData(JSON.parse(raw) as Partial<SiteData>);
+  const env = await getSiteCloudflareEnv();
+
+  if (env?.SITE_DATA) {
+    const seeded = await ensureSeededCloudflareData();
+    return normalizeData(seeded ?? bundledData());
+  }
+
+  if (!inMemoryData) {
+    inMemoryData = bundledData();
+  }
+
+  return deepCloneSiteData(inMemoryData);
 }
 
 export async function saveSiteData(data: SiteData) {
-  await serialize(async () => {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
-  });
+  const normalized = await normalizeData(data);
+  const env = await getSiteCloudflareEnv();
+
+  if (env?.SITE_DATA) {
+    await writeCloudflareSiteData(normalized);
+    return;
+  }
+
+  await writeLocalSiteData(normalized);
 }
 
 export async function updateSiteData(
@@ -321,18 +273,32 @@ export async function updateSiteData(
   return serialize(async () => {
     const current = await loadSiteData();
     const next = await mutator(current);
-    await fs.writeFile(DATA_FILE, JSON.stringify(next, null, 2), "utf8");
-    return next;
+    const normalized = await normalizeData(next);
+    await saveSiteData(normalized);
+    return normalized;
   });
 }
 
 export async function saveUploadFile(file: File) {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const ext = path.extname(file.name) || ".jpg";
+  const ext = file.name.includes(".") ? file.name.slice(file.name.lastIndexOf(".")) : ".jpg";
   const fileName = `${Date.now()}-${crypto.randomUUID()}${ext}`;
-  await fs.mkdir(PUBLIC_UPLOADS_DIR, { recursive: true });
-  await fs.writeFile(path.join(PUBLIC_UPLOADS_DIR, fileName), buffer);
-  return { fileName, src: `/uploads/${fileName}` };
+  const env = await getSiteCloudflareEnv();
+
+  if (env?.SITE_UPLOADS) {
+    await env.SITE_UPLOADS.put(fileName, await file.arrayBuffer(), {
+      httpMetadata: { contentType: file.type || "image/jpeg" },
+    });
+
+    return {
+      fileName,
+      src: `/api/uploads/${fileName}`,
+    };
+  }
+
+  return {
+    fileName,
+    src: `/uploads/${fileName}`,
+  };
 }
 
 export function formatDisplayDate(value: string) {

@@ -1,16 +1,23 @@
-import { cookies } from "next/headers";
 import crypto from "crypto";
-
-export const ADMIN_ACCOUNT = {
-  username: process.env.LOVE_ADMIN_USERNAME ?? "lmmwjc",
-  password: process.env.LOVE_ADMIN_PASSWORD ?? "1111",
-} as const;
+import { cookies } from "next/headers";
+import { getRuntimeEnvVar } from "@/lib/runtime-env";
 
 const COOKIE_NAME = "love_site_session";
-const SECRET = process.env.SITE_SESSION_SECRET ?? "l-w-love-site-secret";
 
-function sign(value: string) {
-  return crypto.createHmac("sha256", SECRET).update(value).digest("hex");
+async function getAdminAccount() {
+  return {
+    username: await getRuntimeEnvVar("LOVE_ADMIN_USERNAME", "lmmwjc"),
+    password: await getRuntimeEnvVar("LOVE_ADMIN_PASSWORD", "1111"),
+  } as const;
+}
+
+async function getSessionSecret() {
+  return getRuntimeEnvVar("SITE_SESSION_SECRET", "l-w-love-site-secret");
+}
+
+async function sign(value: string) {
+  const secret = await getSessionSecret();
+  return crypto.createHmac("sha256", secret).update(value).digest("hex");
 }
 
 function encode(value: string) {
@@ -21,8 +28,9 @@ function decode(value: string) {
   return Buffer.from(value, "base64url").toString("utf8");
 }
 
-export function isValidCredentials(username: string, password: string) {
-  return username === ADMIN_ACCOUNT.username && password === ADMIN_ACCOUNT.password;
+export async function isValidCredentials(username: string, password: string) {
+  const adminAccount = await getAdminAccount();
+  return username === adminAccount.username && password === adminAccount.password;
 }
 
 export async function getSession() {
@@ -35,8 +43,11 @@ export async function getSession() {
 
   try {
     const username = decode(payload);
-    if (username !== ADMIN_ACCOUNT.username) return null;
-    if (signature !== sign(username)) return null;
+    const adminAccount = await getAdminAccount();
+
+    if (username !== adminAccount.username) return null;
+    if (signature !== (await sign(username))) return null;
+
     return { username };
   } catch {
     return null;
@@ -45,7 +56,7 @@ export async function getSession() {
 
 export async function setSession(username: string) {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, `${encode(username)}.${sign(username)}`, {
+  cookieStore.set(COOKIE_NAME, `${encode(username)}.${await sign(username)}`, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
