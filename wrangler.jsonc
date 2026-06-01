@@ -20,6 +20,10 @@
 		{
 			"binding": "SITE_UPLOADS",
 			"bucket_name": "site-uploads"
+		},
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "site-uploads"
 		}
 	],
 	"services": [
