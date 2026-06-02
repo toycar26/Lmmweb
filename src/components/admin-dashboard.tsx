@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PendingSubmit } from "@/components/pending-submit";
+import { PendingActionButton, PendingSubmit } from "@/components/pending-submit";
 import {
   addAlbumAction,
   addDiaryAction,
@@ -12,9 +12,7 @@ import {
   deletePhotoAction,
   deleteTimelineAction,
   logoutAction,
-  removePhotoFromHeroAction,
   setAlbumCoverAction,
-  setHeroPhotoAction,
   updateSettingsAction,
   uploadPhotosAction,
 } from "@/app/actions";
@@ -83,24 +81,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   );
 }
 
-function Button({
-  children,
-  className = "",
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      {...props}
-      className={`rounded-2xl bg-[#7f6255] px-4 py-3 text-sm text-white transition hover:bg-[#6d5349] disabled:opacity-60 ${className}`}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function AdminDashboard({ data, username }: { data: SiteData; username: string }) {
-  const heroPhotos = data.photos.filter((photo) => data.settings.heroPhotoIds.includes(photo.id));
-
   return (
     <main className="relative overflow-hidden">
       <div className="absolute inset-0 page-grid opacity-35" />
@@ -119,16 +100,18 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
               返回首页
             </Link>
             <form action={logoutAction}>
-              <Button type="submit" className="bg-[#a36f66] hover:bg-[#8b5b53]">
-                退出登录
-              </Button>
+              <PendingActionButton
+                idleLabel="退出登录"
+                pendingLabel="退出中..."
+                className="bg-[#a36f66] hover:bg-[#8b5b53]"
+              />
             </form>
           </div>
         </header>
 
         <Card
           title="基础信息"
-          description="这里可以直接修改首页文案、纪念日和网易云歌单，不需要改任何配置文件。"
+          description="这里可以直接修改首页文案、纪念日和网易云歌单，不需要改配置文件。"
         >
           <form action={updateSettingsAction} className="grid gap-4 md:grid-cols-2">
             <Field label="网站名">
@@ -170,7 +153,12 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
               <Input name="musicUrl" defaultValue={data.settings.musicUrl} />
             </Field>
             <div className="md:col-span-2">
-              <Button type="submit">保存基础信息</Button>
+              <PendingSubmit
+                idleLabel="保存基础信息"
+                pendingLabel="保存中..."
+                idleHint="修改完成后保存，首页会自动刷新。"
+                pendingHint="正在保存基础信息，请不要重复点击。"
+              />
             </div>
           </form>
         </Card>
@@ -204,7 +192,12 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                 <Field label="描述">
                   <Textarea name="description" />
                 </Field>
-                <Button type="submit">添加时间轴</Button>
+                <PendingSubmit
+                  idleLabel="添加时间轴"
+                  pendingLabel="提交中..."
+                  idleHint="提交后会立刻加入时间轴。"
+                  pendingHint="正在保存时间轴，请不要重复点击。"
+                />
               </form>
 
               <form
@@ -249,7 +242,12 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                 <Field label="简介">
                   <Textarea name="description" />
                 </Field>
-                <Button type="submit">创建相册</Button>
+                <PendingSubmit
+                  idleLabel="创建相册"
+                  pendingLabel="创建中..."
+                  idleHint="创建后就可以继续往这个相册上传照片。"
+                  pendingHint="正在创建相册，请不要重复点击。"
+                />
               </form>
 
               <form
@@ -286,10 +284,6 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                   <Input type="file" name="photos" multiple accept="image/*" required />
                 </Field>
                 <div className="flex flex-wrap gap-4 text-sm text-[#6d5448]">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" name="asFeatured" />
-                    加入首页轮播
-                  </label>
                   <label className="flex items-center gap-2">
                     <input type="checkbox" name="asCover" />
                     首张设为封面
@@ -355,68 +349,43 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                     ))}
                   </div>
                 </div>
-                <Button type="submit">添加地点</Button>
+                <PendingSubmit
+                  idleLabel="添加地点"
+                  pendingLabel="提交中..."
+                  idleHint="保存后地图和旅行页面会一起更新。"
+                  pendingHint="正在保存地点，请不要重复点击。"
+                />
               </form>
             </div>
           </Card>
 
           <Card
-            title="首页轮播与照片管理"
-            description="这里可以把照片加入或移出首页轮播，也能删除单张照片。"
+            title="照片管理"
+            description="这里可以查看已上传的照片，并删除不再需要的内容。"
           >
-            <div className="grid gap-4">
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {heroPhotos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="overflow-hidden rounded-[1.4rem] border border-white/70 bg-white/70"
-                  >
-                    <div className="relative aspect-[4/3]">
-                      <Image src={photo.src} alt={photo.caption} fill className="object-cover" />
-                    </div>
-                    <div className="space-y-2 px-3 py-3">
-                      <p className="text-sm text-[#5c4a44]">{photo.caption}</p>
-                      <form action={removePhotoFromHeroAction}>
-                        <input type="hidden" name="id" value={photo.id} />
-                        <Button type="submit" className="w-full bg-[#ab746a] hover:bg-[#915e55]">
-                          移出轮播
-                        </Button>
-                      </form>
-                    </div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {data.photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="overflow-hidden rounded-[1.4rem] border border-white/70 bg-white/70"
+                >
+                  <div className="relative aspect-[4/3]">
+                    <Image src={photo.src} alt={photo.caption} fill className="object-cover" />
                   </div>
-                ))}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {data.photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="overflow-hidden rounded-[1.4rem] border border-white/70 bg-white/70"
-                  >
-                    <div className="relative aspect-[4/3]">
-                      <Image src={photo.src} alt={photo.caption} fill className="object-cover" />
-                    </div>
-                    <div className="space-y-2 px-3 py-3">
-                      <p className="text-sm text-[#5c4a44]">{photo.caption}</p>
-                      <p className="text-xs text-[#8b7063]">{photo.albumId}</p>
-                      <div className="flex gap-2">
-                        <form action={setHeroPhotoAction} className="flex-1">
-                          <input type="hidden" name="id" value={photo.id} />
-                          <Button type="submit" className="w-full bg-[#d0a184] hover:bg-[#bb8d70]">
-                            {data.settings.heroPhotoIds.includes(photo.id) ? "取消轮播" : "加入轮播"}
-                          </Button>
-                        </form>
-                        <form action={deletePhotoAction}>
-                          <input type="hidden" name="id" value={photo.id} />
-                          <Button type="submit" className="bg-[#8f6259] hover:bg-[#7a5048]">
-                            删除
-                          </Button>
-                        </form>
-                      </div>
-                    </div>
+                  <div className="space-y-2 px-3 py-3">
+                    <p className="text-sm text-[#5c4a44]">{photo.caption}</p>
+                    <p className="text-xs text-[#8b7063]">{photo.albumId}</p>
+                    <form action={deletePhotoAction}>
+                      <input type="hidden" name="id" value={photo.id} />
+                      <PendingActionButton
+                        idleLabel="删除照片"
+                        pendingLabel="删除中..."
+                        className="w-full bg-[#8f6259] hover:bg-[#7a5048]"
+                      />
+                    </form>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </Card>
         </div>
@@ -424,7 +393,7 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
         <div className="grid gap-6 xl:grid-cols-2">
           <Card
             title="相册管理"
-            description="每个相册都可以设置封面图，继续扩展约会、旅游、个人照等分类。"
+            description="每个相册都可以设置封面图，也可以直接删除整个相册。"
           >
             <div className="grid gap-4">
               {data.albums.map((album) => {
@@ -433,7 +402,10 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                   data.photos.find((photo) => photo.id === album.coverPhotoId) ?? photos[0];
 
                 return (
-                  <div key={album.id} className="rounded-[1.6rem] border border-white/70 bg-white/60 p-4">
+                  <div
+                    key={album.id}
+                    className="rounded-[1.6rem] border border-white/70 bg-white/60 p-4"
+                  >
                     <div className="grid gap-4 md:grid-cols-[220px_1fr]">
                       <div className="relative min-h-[180px] overflow-hidden rounded-[1.2rem]">
                         {cover ? (
@@ -450,22 +422,30 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                           <p className="mt-2 text-sm text-[#7a6258]">{album.description}</p>
                           <p className="mt-2 text-xs text-[#9a7e71]">共 {photos.length} 张</p>
                         </div>
-                        <div className="grid gap-2 sm:grid-cols-2">
-                          {photos.slice(0, 4).map((photo) => (
-                            <form key={photo.id} action={setAlbumCoverAction}>
-                              <input type="hidden" name="albumId" value={album.id} />
-                              <input type="hidden" name="photoId" value={photo.id} />
-                              <Button type="submit" className="w-full bg-[#d0a184] hover:bg-[#bb8d70]">
-                                设为封面 · {photo.caption}
-                              </Button>
-                            </form>
-                          ))}
-                        </div>
+                        {photos.length ? (
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {photos.slice(0, 4).map((photo) => (
+                              <form key={photo.id} action={setAlbumCoverAction}>
+                                <input type="hidden" name="albumId" value={album.id} />
+                                <input type="hidden" name="photoId" value={photo.id} />
+                                <PendingActionButton
+                                  idleLabel={`设为封面 · ${photo.caption}`}
+                                  pendingLabel="设置中..."
+                                  className="w-full bg-[#d0a184] hover:bg-[#bb8d70]"
+                                />
+                              </form>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[#8b7063]">这个相册里还没有照片。</p>
+                        )}
                         <form action={deleteAlbumAction}>
                           <input type="hidden" name="id" value={album.id} />
-                          <Button type="submit" className="bg-[#8f6259] hover:bg-[#7a5048]">
-                            删除相册
-                          </Button>
+                          <PendingActionButton
+                            idleLabel="删除相册"
+                            pendingLabel="删除中..."
+                            className="bg-[#8f6259] hover:bg-[#7a5048]"
+                          />
                         </form>
                       </div>
                     </div>
@@ -482,7 +462,10 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
             >
               <div className="grid gap-3">
                 {data.timeline.map((item) => (
-                  <div key={item.id} className="rounded-[1.4rem] border border-white/70 bg-white/60 p-4">
+                  <div
+                    key={item.id}
+                    className="rounded-[1.4rem] border border-white/70 bg-white/60 p-4"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.28em] text-[#b58c79]">
@@ -492,9 +475,11 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                       </div>
                       <form action={deleteTimelineAction}>
                         <input type="hidden" name="id" value={item.id} />
-                        <Button type="submit" className="bg-[#8f6259] hover:bg-[#7a5048]">
-                          删除
-                        </Button>
+                        <PendingActionButton
+                          idleLabel="删除"
+                          pendingLabel="删除中..."
+                          className="bg-[#8f6259] hover:bg-[#7a5048]"
+                        />
                       </form>
                     </div>
                     <p className="mt-3 text-sm leading-7 text-[#756056]">{item.description}</p>
@@ -505,11 +490,14 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
 
             <Card
               title="日记管理"
-              description="我的日记、她的日记、共同日记会在前台自动分组展示。"
+              description="我的日记、她的日记、共同日记都会在前台自动分组展示。"
             >
               <div className="grid gap-3">
                 {data.diaries.map((entry) => (
-                  <div key={entry.id} className="rounded-[1.4rem] border border-white/70 bg-white/60 p-4">
+                  <div
+                    key={entry.id}
+                    className="rounded-[1.4rem] border border-white/70 bg-white/60 p-4"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.28em] text-[#b58c79]">
@@ -519,9 +507,11 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                       </div>
                       <form action={deleteDiaryAction}>
                         <input type="hidden" name="id" value={entry.id} />
-                        <Button type="submit" className="bg-[#8f6259] hover:bg-[#7a5048]">
-                          删除
-                        </Button>
+                        <PendingActionButton
+                          idleLabel="删除"
+                          pendingLabel="删除中..."
+                          className="bg-[#8f6259] hover:bg-[#7a5048]"
+                        />
                       </form>
                     </div>
                     <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-[#756056]">
@@ -536,11 +526,14 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
 
         <Card
           title="旅行地点管理"
-          description="现在地点是按省份管理的，前台地图会自动把去过的省份加深显示。"
+          description="现在地点按省份管理，前台地图会自动把去过的省份高亮出来。"
         >
           <div className="grid gap-4">
             {data.locations.map((location) => (
-              <div key={location.id} className="rounded-[1.6rem] border border-white/70 bg-white/60 p-4">
+              <div
+                key={location.id}
+                className="rounded-[1.6rem] border border-white/70 bg-white/60 p-4"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.28em] text-[#b58c79]">
@@ -550,9 +543,11 @@ export function AdminDashboard({ data, username }: { data: SiteData; username: s
                   </div>
                   <form action={deleteLocationAction}>
                     <input type="hidden" name="id" value={location.id} />
-                    <Button type="submit" className="bg-[#8f6259] hover:bg-[#7a5048]">
-                      删除
-                    </Button>
+                    <PendingActionButton
+                      idleLabel="删除"
+                      pendingLabel="删除中..."
+                      className="bg-[#8f6259] hover:bg-[#7a5048]"
+                    />
                   </form>
                 </div>
                 <p className="mt-3 text-sm leading-7 text-[#756056]">{location.note}</p>

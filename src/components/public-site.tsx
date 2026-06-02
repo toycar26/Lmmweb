@@ -1077,10 +1077,6 @@ function RadioViewer({
 export function PublicSite({ data }: { data: SiteData }) {
   const [activeExperience, setActiveExperience] = useState<ExperienceState | null>(null);
 
-  const heroPhotos = data.settings.heroPhotoIds
-    .map((id) => data.photos.find((photo) => photo.id === id))
-    .filter((photo): photo is SiteData["photos"][number] => Boolean(photo));
-  const highlightPhotos = heroPhotos.length ? heroPhotos : data.photos;
   const albumViews = useMemo(() => buildAlbumViews(data), [data]);
   const travelLocations = [...data.locations].sort((a, b) => a.date.localeCompare(b.date));
   const diaries = diaryGroups(data.diaries);
@@ -1205,7 +1201,7 @@ export function PublicSite({ data }: { data: SiteData }) {
       (location.photoIds.length
         ? data.photos.find((photo) => location.photoIds.includes(photo.id))
         : undefined) ??
-      highlightPhotos[index % Math.max(highlightPhotos.length, 1)];
+      data.photos[index % Math.max(data.photos.length, 1)];
 
     travelPages.push({
       id: `travel-${location.id}`,
